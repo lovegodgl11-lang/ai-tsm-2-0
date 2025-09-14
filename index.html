@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="en" class=""><head><script>window.livecodes = window.livecodes || {};</script><title>Untitled Project</title><meta name="title" content="Untitled Project"><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="stylesheet" href="./style.css"><script src="https://cdn.jsdelivr.net/npm/es-module-shims@1.10.0/dist/es-module-shims.js" async=""></script><script type="importmap">{
+  "imports": {}
+}</script></head><body>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navrose Stitching Point - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: sans-serif; background-color: #f3f4f6; }
+        .dashboard-container { display: flex; min-height: 100vh; }
+        .sidebar { width: 250px; background-color: #1f2937; color: white; padding: 20px; display: flex; flex-direction: column; }
+        .sidebar-logo { text-align: center; margin-bottom: 30px; }
+        .sidebar-logo img { width: 80px; height: auto; }
+        .nav-link { padding: 12px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: background-color 0.2s; }
+        .nav-link:hover { background-color: #374151; }
+        .nav-link.active { background-color: #3b82f6; }
+        .main-content { flex-grow: 1; padding: 20px; }
+        .header { background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header h1 { font-size: 1.5rem; font-weight: bold; }
+        .page-content { display: none; }
+        .page-content.active { display: block; }
+        .card { background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        .card h2 { font-size: 1.25rem; font-weight: bold; margin-bottom: 15px; }
+        .stat-card { padding: 20px; border-radius: 12px; text-align: center; color: white; cursor: pointer; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-card .value { font-size: 2rem; font-weight: bold; }
+        .stat-card .label { font-size: 1rem; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .nav-tabs { display: flex; margin-bottom: 20px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .nav-tab { padding: 12px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: border-color 0.2s; }
+        .nav-tab.active { border-color: #3b82f6; font-weight: bold; }
+        
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white; padding: 20px; border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            width: 90%; max-width: 600px;
+            position: relative;
+        }
+        .modal-close-btn {
+            position: absolute; top: 10px; right: 10px;
+            font-size: 1.5rem; cursor: pointer;
+        }
+        .modal-content input, .modal-content textarea, .modal-content select {
+            border: 1px solid #d1d5db; padding: 8px; border-radius: 6px; width: 100%; box-sizing: border-box;
+        }
+        .modal-content button {
+            background-color: #3b82f6; color: white; padding: 10px; border-radius: 8px; width: 100%;
+        }
+        .search-bar-container {
+            display: flex; gap: 10px; margin-bottom: 15px;
+        }
+        .search-bar-container input {
+            flex-grow: 1;
+        }
+        .inner-table {
+            background-color: #f9fafb;
+            margin-top: 10px;
+        }
+        .inner-table td {
+            padding: 8px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .automation-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .item-row {
+            border: 1px solid #e5e7eb;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .item-row input, .item-row select {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+    </style>
+
+
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                <img src="https://via.placeholder.com/80" alt="Logo">
+                <div class="text-xl font-bold mt-2">Navrose Stitching Point</div>
+            </div>
+            <div class="nav-link active" data-tab="dashboard">
+                <i class="fas fa-home mr-2"></i> Dashboard
+            </div>
+            <div class="nav-link" data-tab="orders">
+                <i class="fas fa-list-alt mr-2"></i> Orders
+            </div>
+            <div class="nav-link" data-tab="booking">
+                <i class="fas fa-plus-circle mr-2"></i> New Booking
+            </div>
+            <div class="nav-link" data-tab="payments">
+                <i class="fas fa-receipt mr-2"></i> Payments
+            </div>
+            <div class="nav-link" data-tab="expenses">
+                <i class="fas fa-cash-register mr-2"></i> Expenses
+            </div>
+            <div class="nav-link" data-tab="purchase-list">
+                <i class="fas fa-shopping-cart mr-2"></i> Purchase List
+            </div>
+            <div class="nav-link" data-tab="reports">
+                <i class="fas fa-chart-line mr-2"></i> Reports
+            </div>
+            <div class="nav-link" data-tab="customer-profiles">
+                <i class="fas fa-users mr-2"></i> Customer Profiles
+            </div>
+            <div class="nav-link" data-tab="automation">
+                <i class="fas fa-cogs mr-2"></i> Automation
+            </div>
+            <div class="nav-link" data-tab="messages">
+                <i class="fas fa-comment-dots mr-2"></i> Messages
+            </div>
+            <div class="nav-link" data-tab="appointments">
+                <i class="fas fa-calendar-alt mr-2"></i> Appointments
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1 id="page-title">Dashboard</h1>
+                <div class="profile">
+                    <button class="bg-gray-200 text-gray-800 py-2 px-4 rounded-full">
+                        <i class="fas fa-user-circle mr-1"></i> Tailor
+                    </button>
+                </div>
+            </div>
+
+            <div id="dashboard" class="page-content active">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="stat-card bg-blue-500" onclick="filterByStatus('all')">
+                        <div class="value" id="total-orders-stat">0</div>
+                        <div class="label">Total Orders</div>
+                    </div>
+                    <div class="stat-card bg-green-500" onclick="filterByStatus('Completed')">
+                        <div class="value" id="completed-orders-stat">0</div>
+                        <div class="label">Completed Orders</div>
+                    </div>
+                    <div class="stat-card bg-red-500" onclick="filterByStatus('Pending')">
+                        <div class="value" id="pending-orders-stat">0</div>
+                        <div class="label">Pending Orders</div>
+                    </div>
+                    <div class="stat-card bg-yellow-500" onclick="renderReports()">
+                        <div class="value" id="total-income-stat">₹0</div>
+                        <div class="label">Total Income</div>
+                    </div>
+                    <div class="stat-card bg-purple-500">
+                        <div class="value" id="total-cash-stat">₹0</div>
+                        <div class="label">Cash Income</div>
+                    </div>
+                    <div class="stat-card bg-indigo-500">
+                        <div class="value" id="total-gpay-stat">₹0</div>
+                        <div class="label">GPay/UPI Income</div>
+                    </div>
+                    <div class="stat-card bg-orange-500" onclick="renderAppointments()">
+                        <div class="value" id="pending-appointments-stat">0</div>
+                        <div class="label">Pending Appointments</div>
+                    </div>
+                </div>
+                <div id="smart-reminders-alerts" class="mt-4"></div>
+                <div id="todays-report-summary" class="card mt-4">
+                    <h2 class="text-xl font-bold mb-4">Today's Report</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-blue-100 p-4 rounded-lg text-center">
+                            <div class="text-3xl font-bold text-blue-800" id="today-bookings-stat">0</div>
+                            <div class="text-blue-600">New Bookings Today</div>
+                        </div>
+                        <div class="bg-green-100 p-4 rounded-lg text-center">
+                            <div class="text-3xl font-bold text-green-800" id="today-completed-stat">0</div>
+                            <div class="text-green-600">Orders Completed Today</div>
+                        </div>
+                        <div class="bg-yellow-100 p-4 rounded-lg text-center">
+                            <div class="text-3xl font-bold text-yellow-800" id="today-payments-stat">₹0</div>
+                            <div class="text-yellow-600">Payments Received Today</div>
+                        </div>
+                    </div>
+                    <div id="pending-payments-list" class="mt-6"></div>
+                </div>
+            </div>
+
+            <div id="orders" class="page-content">
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4">All Orders</h2>
+                    <div class="search-bar-container">
+                        <input type="text" id="order-search" placeholder="Search by name or mobile number..." onkeyup="filterOrders()">
+                    </div>
+                    <div id="orders-table-container"></div>
+                </div>
+            </div>
+
+            <div id="booking" class="page-content">
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4">New Booking</h2>
+                    <form id="booking-form" class="space-y-4">
+                        <input type="text" id="customerName" placeholder="Customer Name" required="">
+                        <input type="tel" id="customerMobile" placeholder="Customer Mobile" required="">
+                        <input type="text" id="customerAddress" placeholder="Customer Address">
+                        <div id="items-container" class="space-y-2">
+                            <div class="item-row">
+                                <input type="text" class="item-name" placeholder="Item Name" required="">
+                                <input type="number" class="item-amount" placeholder="Amount" step="0.01" required="">
+                                <input type="date" class="item-delivery-date" required="">
+                                <textarea class="needed-items-notes" placeholder="e.g. green suit -> lace, dori, latkan"></textarea>
+                                <textarea class="design-notes" placeholder="e.g. Photo on WhatsApp. Same neck design."></textarea>
+                                <select class="item-status w-full p-2 border rounded">
+                                    <option value="Pending">Pending</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                                <select class="item-handover-status w-full p-2 border rounded mt-2">
+                                    <option value="Pending">Item with Tailor</option>
+                                    <option value="Handed Over">Item Handed Over</option>
+                                </select>
+                                <button type="button" class="remove-item-btn bg-red-500 text-white px-2 py-1 rounded-md mt-2"><i class="fas fa-minus"></i> Remove Item</button>
+                            </div>
+                            </div>
+                        <button type="button" id="add-item-btn" class="bg-gray-200 text-gray-700 w-full py-2 rounded-md"><i class="fas fa-plus"></i> Add Item</button>
+                        <textarea id="description" placeholder="Overall Description (e.g., fabric type, special notes)"></textarea>
+                        <div class="flex gap-2">
+                            <textarea id="measurements" placeholder="Measurements... (Neck, Chest, Waist etc.)"></textarea>
+                            <button type="button" onclick="loadMeasurementsFromProfile()" class="bg-gray-400 text-white px-4 py-2 rounded-md whitespace-nowrap"><i class="fas fa-copy"></i> Load Meas.</button>
+                        </div>
+                        <input type="number" id="totalCharges" placeholder="Total Charges" step="0.01" required="">
+                        <input type="number" id="receivedPayment" placeholder="Received Payment" step="0.01" value="0">
+                        <div id="payment-method-container" class="hidden">
+                            <label for="payment-method-booking">Payment Method:</label>
+                            <select id="payment-method-booking" class="w-full p-2 border rounded">
+                                <option value="Cash">Cash</option>
+                                <option value="GPay/UPI">GPay/UPI</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="bg-blue-500 text-white w-full py-2 rounded-md">Create Booking</button>
+                    </form>
+                    <div id="booking-status" class="mt-4"></div>
+                </div>
+            </div>
+
+            <div id="payments" class="page-content">
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4">Record New Payment</h2>
+                    <form id="payment-form" class="space-y-4">
+                        <input type="text" id="payment-order-id" placeholder="Order ID" required="">
+                        <input type="number" id="payment-amount" placeholder="Payment Amount" step="0.01" required="">
+                        <select id="payment-method" class="w-full p-2 border rounded">
+                            <option value="Cash">Cash</option>
+                            <option value="GPay/UPI">GPay/UPI</option>
+                        </select>
+                        <select id="payment-status-new" class="w-full p-2 border rounded">
+                            <option value="Completed">Completed</option>
+                            <option value="Pending">Pending (Network Issue/Later)</option>
+                        </select>
+                        <button type="submit" class="bg-green-500 text-white w-full py-2 rounded-md">Record Payment</button>
+                    </form>
+                    <div id="payment-status" class="mt-4"></div>
+                    <h2 class="text-xl font-bold mt-8 mb-4">All Payments</h2>
+                    <div id="payments-table-container"></div>
+                </div>
+            </div>
+
+            <div id="expenses" class="page-content">
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4">Record New Expense</h2>
+                    <form id="expense-form" class="space-y-4">
+                        <input type="text" id="expense-name" placeholder="Expense Name (e.g., Rent, Fabric)" required="">
+                        <input type="number" id="expense-amount" placeholder="Amount" step="0.01" required="">
+                        <input type="date" id="expense-date" required="">
+                        <button type="submit" class="bg-red-500 text-white w-full py-2 rounded-md">Record Expense</button>
+                    </form>
+                    <div id="expense-status" class="mt-4"></div>
+                    <h2 class="text-xl font-bold mt-8 mb-4">All Expenses</h2>
+                    <div id="expenses-table-container"></div>
+                </div>
+            </div>
+
+            <div id="purchase-list" class="page-content">
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4">Purchase List for Orders</h2>
+                    <div id="purchase-list-container"></div>
+                </div>
+            </div>
+
+            <div id="reports" class="page-content">
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4">Financial Overview</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="stat-card bg-green-500">
+                            <div class="value" id="total-income-report">₹0</div>
+                            <div class="label">Total Income</div>
+                        </div>
+                        <div class="stat-card bg-red-500">
+                            <div class="value" id="total-expenses-report">₹0</div>
+                            <div class="label">Total Expenses</div>
+                        </div>
+                        <div class="stat-card bg-blue-500">
+                            <div class="value" id="net-profit-report">₹0</div>
+                            <div class="label">Net Profit</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-4">
+                    <h2 class="text-xl font-bold mb-4">Detailed Financials</h2>
+                    <div id="reports-table-container"></div>
+                </div>
+            </div>
+
+            <div id="customer-profiles" class="page-content">
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4">Customer Profiles</h2>
+                    <div class="search-bar-container">
+                        <input type="text" id="customer-search" placeholder="Search by name or mobile number..." onkeyup="filterCustomers()">
+                    </div>
+                    <div id="customer-profiles-container"></div>
+                </div>
+            </div>
+
+            <div id="automation" class="page-content">
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4">Automation Settings</h2>
+                    <div class="automation-item">
+                        <span>Smart Reminders</span>
+                        <label class="switch">
+                            <input type="checkbox" id="smart-reminders-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="automation-item">
+                        <span>Customer Feedback</span>
+                        <label class="switch">
+                            <input type="checkbox" id="customer-feedback-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="automation-item">
+                        <span>Automatic Reports</span>
+                        <label class="switch">
+                            <input type="checkbox" id="automatic-reports-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button onclick="saveAutomationSettings()" class="bg-blue-500 text-white py-2 px-4 rounded-md">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="messages" class="page-content">
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4">Messages from Clients</h2>
+                    <div id="messages-container">
+                        <p class="text-center text-gray-500">Loading messages...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="appointments" class="page-content">
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4">Appointment Requests</h2>
+                    <div id="appointments-container">
+                        <p class="text-center text-gray-500">Loading appointments...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close-btn" onclick="closeModal('edit-modal')">×</span>
+            <h2 class="text-xl font-bold mb-4">Edit Order</h2>
+            <form id="edit-form" class="space-y-4">
+                <input type="hidden" id="edit-order-id">
+                <input type="text" id="edit-customerName" placeholder="Customer Name" required="">
+                <input type="tel" id="edit-customerMobile" placeholder="Customer Mobile" required="">
+                <input type="text" id="edit-customerAddress" placeholder="Customer Address">
+                <div id="edit-items-container" class="space-y-2"></div>
+                <button type="button" id="edit-add-item-btn" class="bg-gray-200 text-gray-700 w-full py-2 rounded-md"><i class="fas fa-plus"></i> Add Item</button>
+                <textarea id="edit-description" placeholder="Description"></textarea>
+                <textarea id="edit-measurements" placeholder="Measurements"></textarea>
+                <input type="number" id="edit-totalCharges" placeholder="Total Charges" step="0.01" required="">
+                <button type="submit" class="bg-blue-500 text-white w-full py-2 rounded-md">Update Order</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="record-payment-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close-btn" onclick="closeModal('record-payment-modal')">×</span>
+            <h2 class="text-xl font-bold mb-4">Record Payment</h2>
+            <form id="record-payment-form" class="space-y-4">
+                <input type="hidden" id="record-order-id">
+                <p>Order ID: <span id="record-order-display-id" class="font-bold"></span></p>
+                <p>Due Amount: <span id="record-due-amount" class="font-bold"></span></p>
+                <input type="number" id="record-payment-amount" placeholder="Payment Amount" step="0.01" required="">
+                <select id="record-payment-method" class="w-full p-2 border rounded">
+                    <option value="Cash">Cash</option>
+                    <option value="GPay/UPI">GPay/UPI</option>
+                </select>
+                <select id="record-payment-status" class="w-full p-2 border rounded">
+                    <option value="Completed">Completed</option>
+                    <option value="Pending">Pending (Network Issue/Later)</option>
+                </select>
+                <button type="submit" class="bg-green-500 text-white w-full py-2 rounded-md">Record Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="edit-payment-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close-btn" onclick="closeModal('edit-payment-modal')">×</span>
+            <h2 class="text-xl font-bold mb-4">Edit Payment</h2>
+            <form id="edit-payment-form" class="space-y-4">
+                <input type="hidden" id="edit-payment-id">
+                <input type="number" id="edit-payment-amount" placeholder="Payment Amount" step="0.01" required="">
+                <select id="edit-payment-method" class="w-full p-2 border rounded">
+                    <option value="Cash">Cash</option>
+                    <option value="GPay/UPI">GPay/UPI</option>
+                </select>
+                <button type="submit" class="bg-blue-500 text-white w-full py-2 rounded-md">Update Payment</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="ledger-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close-btn" onclick="closeModal('ledger-modal')">×</span>
+            <h2 class="text-xl font-bold mb-4">Customer Ledger</h2>
+            <p><strong>Name:</strong> <span id="ledger-customer-name"></span></p>
+            <p><strong>Mobile:</strong> <span id="ledger-customer-mobile"></span></p>
+            <div id="ledger-content-container" class="mt-4"></div>
+        </div>
+    </div>
+
+    <div id="measurements-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close-btn" onclick="closeModal('measurements-modal')">×</span>
+            <h2 class="text-xl font-bold mb-4">Measurements for <span id="measurements-customer-name"></span></h2>
+            <p><strong>Mobile:</strong> <span id="measurements-customer-mobile"></span></p>
+            <textarea id="measurements-content" class="w-full h-48 border p-2 mt-2" placeholder="No measurements saved yet..."></textarea>
+            <button onclick="saveCustomerMeasurements()" class="bg-green-500 text-white w-full py-2 rounded-md mt-4">Save Measurements</button>
+        </div>
+    </div>
+
+    <div id="purchase-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close-btn" onclick="closeModal('purchase-modal')">×</span>
+            <h2 class="text-xl font-bold mb-4">Purchase Details</h2>
+            <input type="hidden" id="purchase-item-id">
+            <input type="hidden" id="purchase-order-id">
+            <input type="text" id="purchase-item-name" disabled="">
+            <input type="text" id="purchase-notes" placeholder="e.g., Fabric purchased from ABC shop">
+            <input type="number" id="purchase-cost" placeholder="Total Cost" step="0.01">
+            <select id="purchase-status">
+                <option value="Pending">Pending</option>
+                <option value="Purchased">Purchased</option>
+            </select>
+            <button onclick="savePurchaseDetails()" class="bg-blue-500 text-white w-full py-2 rounded-md mt-4">Save</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSY4IQPsBKVF8Zx1wQQxhtwrhrtWSyB64",
+            authDomain: "tailor-manager-b630c.firebaseapp.com",
+            projectId: "tailor-manager-b630c",
+            storageBucket: "tailor-manager-b630c.firebasestorage.app",
+            messagingSenderId: "175667998044",
+            appId: "1:175667998044:web:042f6c6abb00f89a036599"
+        };
+        
+        // Ensure Firebase is only initialized once
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        } else {
+            console.log("Firebase app already initialized.");
+        }
+        
+        const db = firebase.firestore();
+        let allOrders = [];
+        let allPayments = [];
+        let allExpenses = [];
+        let allCustomers = [];
+        let automationSettings = {};
+        
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page-content');
+        const pageTitle = document.getElementById('page-title');
+        
+        const tabs = {
+            'dashboard': renderDashboard,
+            'orders': renderOrdersTable,
+            'booking': renderBookingForm,
+            'payments': renderPayments,
+            'expenses': renderExpenses,
+            'purchase-list': renderPurchaseList,
+            'reports': renderReports,
+            'customer-profiles': renderCustomerProfiles,
+            'automation': renderAutomationSettings,
+            'messages': renderMessages,
+            'appointments': renderAppointments,
+        };
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                link.classList.add('active');
+                
+                const targetTab = link.getAttribute('data-tab');
+                pages.forEach(page => {
+                    page.classList.remove('active');
+                    if (page.id === targetTab) {
+                        page.classList.add('active');
+                        pageTitle.textContent = link.textContent.trim();
+                        if (tabs[targetTab]) {
+                            tabs[targetTab]();
+                        }
+                    }
+                });
+            });
+        });
+        
+        async function fetchData(collectionName, query = null) {
+            try {
+                let snapshot;
+                if (query) {
+                    snapshot = await db.collection(collectionName).where(query.field, query.operator, query.value).get();
+                } else {
+                    snapshot = await db.collection(collectionName).get();
+                }
+                
+                if (snapshot && snapshot.docs) {
+                    return snapshot.docs.map(doc => ({ id: doc.id, data: doc.data() }));
+                }
+                return [];
+            } catch (error) {
+                console.error(`Error fetching data from ${collectionName}:`, error);
+                return [];
+            }
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        async function loadAutomationSettings() {
+            try {
+                const doc = await db.collection('Settings').doc('automation').get();
+                if (doc.exists) {
+                    automationSettings = doc.data();
+                } else {
+                    automationSettings = {
+                        smartReminders: false,
+                        customerFeedback: false,
+                        automaticReports: false
+                    };
+                    await db.collection('Settings').doc('automation').set(automationSettings);
+                }
+            } catch (error) {
+                console.error("Error loading automation settings: ", error);
+            }
+        }
+
+        async function renderAutomationSettings() {
+            await loadAutomationSettings();
+            document.getElementById('smart-reminders-toggle').checked = automationSettings.smartReminders;
+            document.getElementById('customer-feedback-toggle').checked = automationSettings.customerFeedback;
+            document.getElementById('automatic-reports-toggle').checked = automationSettings.automaticReports;
+        }
+
+        async function saveAutomationSettings() {
+            const newSettings = {
+                smartReminders: document.getElementById('smart-reminders-toggle').checked,
+                customerFeedback: document.getElementById('customer-feedback-toggle').checked,
+                automaticReports: document.getElementById('automatic-reports-toggle').checked
+            };
+            try {
+                await db.collection('Settings').doc('automation').set(newSettings);
+                alert("Automation settings saved successfully!");
+                automationSettings = newSettings;
+            } catch (error) {
+                alert("Error saving settings: " + error.message);
+            }
+        }
+
+        async function checkSmartReminders() {
+            const container = document.getElementById('smart-reminders-alerts');
+            container.innerHTML = '';
+            if (!automationSettings.smartReminders) {
+                return;
+            }
+
+            const today = new Date();
+            const tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1);
+
+            const pendingOrders = allOrders.filter(order => order.data.items.some(item => item.status === 'Pending'));
+            const reminders = pendingOrders.filter(order => {
+                const pendingItems = order.data.items.filter(item => item.status === 'Pending');
+                return pendingItems.some(item => {
+                    const deliveryDate = new Date(item.deliveryDate);
+                    return deliveryDate.toDateString() === tomorrow.toDateString() || deliveryDate < today;
+                });
+            });
+            
+            if (reminders.length > 0) {
+                let alertHtml = `<div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+                                    <p class="font-bold">Smart Reminders</p>
+                                    <p>You have pending orders due soon:</p>
+                                    <ul class="list-disc list-inside mt-2">`;
+                reminders.forEach(order => {
+                    const pendingItems = order.data.items.filter(item => item.status === 'Pending');
+                    pendingItems.forEach(item => {
+                         const statusText = new Date(item.deliveryDate) < today ? 'OVERDUE' : 'Due TOMORROW';
+                         alertHtml += `<li>Order ID: ${order.id.slice(0, 6)}... - Item: ${item.name} for ${order.data.customerName} (${statusText})</li>`;
+                    });
+                });
+                alertHtml += `</ul></div>`;
+                container.innerHTML = alertHtml;
+            }
+        }
+
+        async function renderTodaysReport() {
+            const today = new Date().toISOString().slice(0, 10);
+            
+            const todaysBookings = allOrders.filter(order => order.data.bookingDate === today);
+            
+            let todaysCompletedItemsCount = 0;
+            allOrders.forEach(order => {
+                if (order.data.items) {
+                    order.data.items.forEach(item => {
+                        if (item.completionDate === today) {
+                            todaysCompletedItemsCount++;
+                        }
+                    });
+                }
+            });
+
+            const todaysPayments = allPayments.filter(payment => payment.data.date === today && payment.data.paymentStatus === 'Completed');
+            const totalPaymentsToday = todaysPayments.reduce((sum, payment) => sum + (parseFloat(payment.data.amount) || 0), 0);
+
+            document.getElementById('today-bookings-stat').textContent = todaysBookings.length;
+            document.getElementById('today-completed-stat').textContent = todaysCompletedItemsCount;
+            document.getElementById('today-payments-stat').textContent = `₹${totalPaymentsToday.toFixed(2)}`;
+
+            const pendingPaymentsList = document.getElementById('pending-payments-list');
+            const pendingCompletedOrders = allOrders.filter(order => {
+                const totalPaidForOrder = allPayments.filter(p => p.data.orderId === order.id).reduce((sum, p) => sum + parseFloat(p.data.amount), 0);
+                const totalChargesForOrder = order.data.items ? order.data.items.reduce((sum, item) => sum + parseFloat(item.amount), 0) : 0;
+                const hasCompletedToday = order.data.items ? order.data.items.some(item => item.completionDate === today) : false;
+                return hasCompletedToday && (totalChargesForOrder > totalPaidForOrder);
+            });
+
+            if (pendingCompletedOrders.length > 0) {
+                let html = `<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+                                <p class="font-bold">Pending Payments for Today's Completed Orders</p>
+                                <ul class="list-disc list-inside mt-2">`;
+                pendingCompletedOrders.forEach(order => {
+                    const totalPaid = allPayments.filter(p => p.data.orderId === order.id).reduce((sum, p) => sum + parseFloat(p.data.amount), 0);
+                    const totalCharges = order.data.items ? order.data.items.reduce((sum, item) => sum + parseFloat(item.amount), 0) : 0;
+                    const balanceDue = totalCharges - totalPaid;
+                    html += `<li>Order ID: ${order.id.slice(0, 6)}... for ${order.data.customerName}. Due: ₹${balanceDue.toFixed(2)}</li>`;
+                });
+                html += `</ul></div>`;
+                pendingPaymentsList.innerHTML = html;
+            } else {
+                pendingPaymentsList.innerHTML = `<p class="text-center text-gray-500">No pending payments for today's completed orders. Good job!</p>`;
+            }
+        }
+
+        async function renderDashboard() {
+            try {
+                allOrders = await fetchData('orders');
+                allPayments = await fetchData('Payments');
+                allExpenses = await fetchData('Expenses');
+                await loadAutomationSettings();
+                
+                checkSmartReminders();
+                renderTodaysReport();
+                
+                let completedItemsCount = 0;
+                let pendingItemsCount = 0;
+                allOrders.forEach(order => {
+                    if (order.data.items) {
+                        order.data.items.forEach(item => {
+                            if (item.status === 'Completed') {
+                                completedItemsCount++;
+                            } else {
+                                pendingItemsCount++;
+                            }
+                        });
+                    }
+                });
+                const totalOrders = allOrders.length;
+                const totalIncome = allPayments.filter(p => p.data.paymentStatus === 'Completed').reduce((sum, payment) => sum + (parseFloat(payment.data.amount) || 0), 0);
+                const cashPayments = allPayments.filter(p => p.data.paymentMethod === 'Cash' && p.data.paymentStatus === 'Completed');
+                const gpayPayments = allPayments.filter(p => p.data.paymentMethod === 'GPay/UPI' && p.data.paymentStatus === 'Completed');
+                const totalCash = cashPayments.reduce((sum, p) => sum + (parseFloat(p.data.amount) || 0), 0);
+                const totalGPay = gpayPayments.reduce((sum, p) => sum + (parseFloat(p.data.amount) || 0), 0);
+                const messages = await fetchData('Messages');
+                const appointments = await fetchData('Appointments');
+
+                document.getElementById('total-orders-stat').textContent = totalOrders;
+                document.getElementById('completed-orders-stat').textContent = completedItemsCount;
+                document.getElementById('pending-orders-stat').textContent = pendingItemsCount;
+                document.getElementById('total-income-stat').textContent = `₹${totalIncome.toFixed(2)}`;
+                document.getElementById('total-cash-stat').textContent = `₹${totalCash.toFixed(2)}`;
+                document.getElementById('total-gpay-stat').textContent = `₹${totalGPay.toFixed(2)}`;
+                document.getElementById('pending-appointments-stat').textContent = appointments.length;
+
+            } catch (error) {
+                console.error("Error fetching dashboard data: ", error);
+            }
+        }
+
+        function filterByStatus(status) {
+            const ordersLink = document.querySelector('.nav-link[data-tab="orders"]');
+            navLinks.forEach(nav => nav.classList.remove('active'));
+            ordersLink.classList.add('active');
+
+            pages.forEach(page => {
+                page.classList.remove('active');
+                if (page.id === 'orders') {
+                    page.classList.add('active');
+                }
+            });
+
+            if (status === 'all') {
+                pageTitle.textContent = 'All Orders';
+                displayOrders(allOrders);
+            } else {
+                pageTitle.textContent = `Orders (${status})`;
+                const filtered = allOrders.filter(order => order.data.items && order.data.items.some(item => item.status === status));
+                displayOrders(filtered);
+            }
+        }
+
+        async function renderOrdersTable() {
+            const container = document.getElementById('orders-table-container');
+            container.innerHTML = `<p class="text-center text-gray-500">Loading orders...</p>`;
+            try {
+                allOrders = await fetchData('orders');
+                allPayments = await fetchData('Payments');
+                pageTitle.textContent = 'All Orders';
+                displayOrders(allOrders);
+            } catch (error) {
+                container.innerHTML = `<p class="text-red-600 text-center">Error loading orders.</p>`;
+                console.error("Error fetching orders: ", error);
+            }
+        }
+
+        function displayOrders(orders) {
+            const container = document.getElementById('orders-table-container');
+            if (!orders || orders.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500">No orders found.</p>`;
+                return;
+            }
+            let totalChargesSum = 0;
+            let totalPaidSum = 0;
+            let totalDueSum = 0;
+
+            let html = `<table class="min-w-full">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Mobile</th>
+                                    <th>Booking Date</th>
+                                    <th>Total Charges</th>
+                                    <th>Total Paid</th>
+                                    <th>Due</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+            orders.forEach(order => {
+                const items = order.data.items || [];
+                const totalChargesForOrder = items.reduce((sum, item) => sum + parseFloat(item.amount), 0);
+                const paymentsForOrder = allPayments.filter(p => p.data.orderId === order.id);
+                const totalPaidForOrder = paymentsForOrder.reduce((sum, p) => sum + parseFloat(p.data.amount), 0);
+                const balanceDue = totalChargesForOrder - totalPaidForOrder;
+
+                totalChargesSum += totalChargesForOrder;
+                totalPaidSum += totalPaidForOrder;
+                totalDueSum += balanceDue;
+                
+                html += `<tr>
+                            <td><i class="fas fa-plus cursor-pointer expand-btn" onclick="toggleOrderDetails(this, '${order.id}')"></i></td>
+                            <td>${order.id.slice(0, 6)}...</td>
+                            <td>${order.data.customerName}</td>
+                            <td>${order.data.customerMobile}</td>
+                            <td>${order.data.bookingDate}</td>
+                            <td>₹${totalChargesForOrder.toFixed(2)}</td>
+                            <td>₹${totalPaidForOrder.toFixed(2)}</td>
+                            <td><span class="${balanceDue > 0 ? 'text-red-600' : 'text-green-600'}">₹${balanceDue.toFixed(2)}</span></td>
+                            <td>
+                                <button onclick="editOrder('${order.id}')" class="text-blue-500 hover:underline mx-1"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteOrder('${order.id}')" class="text-red-500 hover:underline mx-1"><i class="fas fa-trash-alt"></i></button>
+                                <button onclick="recordPaymentForOrder('${order.id}')" class="text-green-500 hover:underline mx-1"><i class="fas fa-plus"></i> Pay</button>
+                            </td>
+                         </tr>
+                         <tr id="details-${order.id}" class="inner-table" style="display:none;">
+                            <td colspan="9"></td>
+                         </tr>`;
+            });
+            html += `</tbody><tfoot>
+                        <tr class="font-bold bg-gray-200">
+                            <td colspan="5">Grand Total</td>
+                            <td>₹${totalChargesSum.toFixed(2)}</td>
+                            <td>₹${totalPaidSum.toFixed(2)}</td>
+                            <td>₹${totalDueSum.toFixed(2)}</td>
+                            <td colspan="1"></td>
+                        </tr>
+                    </tfoot></table>`;
+            container.innerHTML = html;
+        }
+
+        async function toggleOrderDetails(btn, id) {
+            const row = document.getElementById(`details-${id}`);
+            if (row.style.display === 'none') {
+                btn.classList.replace('fa-plus', 'fa-minus');
+                const orderDoc = await db.collection('orders').doc(id).get();
+                const order = orderDoc.data();
+                row.style.display = 'table-row';
+                row.querySelector('td').innerHTML = renderOrderItems(order);
+            } else {
+                btn.classList.replace('fa-minus', 'fa-plus');
+                row.style.display = 'none';
+                row.querySelector('td').innerHTML = '';
+            }
+        }
+        
+        function renderOrderItems(order) {
+            const items = order.items || [];
+            let html = `<div class="p-4 bg-white rounded-lg">
+                <p class="font-bold">Items Details:</p>
+                <ul class="list-disc list-inside space-y-2">`;
+            items.forEach(item => {
+                const statusColor = item.status === 'Completed' ? 'text-green-600' : 'text-red-600';
+                const handoverStatusColor = item.handoverStatus === 'Handed Over' ? 'text-green-600' : 'text-red-600';
+                html += `<li><strong>Item:</strong> ${item.name} | <strong>Amount:</strong> ₹${item.amount} | <strong>Delivery Date:</strong> ${item.deliveryDate} | <strong>Work Status:</strong> <span class="${statusColor}">${item.status}</span> | <strong>Handover Status:</strong> <span class="${handoverStatusColor}">${item.handoverStatus}</span></li>`;
+                if (item.neededItems) {
+                    html += `<ul><li>**Needed Items:** ${item.neededItems}</li></ul>`;
+                }
+                if (item.designNotes) {
+                    html += `<ul><li>**Design Notes:** ${item.designNotes}</li></ul>`;
+                }
+            });
+            html += `</ul>
+                <p class="font-bold mt-4">Overall Description:</p>
+                <p>${order.description || 'N/A'}</p>
+                <p class="font-bold mt-2">Measurements:</p>
+                <p>${order.measurements || 'N/A'}</p>
+            </div>`;
+            return html;
+        }
+
+        function filterOrders() {
+            const searchTerm = document.getElementById('order-search').value.toLowerCase();
+            const filteredOrders = allOrders.filter(order =>
+                order.data.customerName.toLowerCase().includes(searchTerm) ||
+                order.data.customerMobile.toLowerCase().includes(searchTerm)
+            );
+            displayOrders(filteredOrders);
+        }
+
+        async function editOrder(id) {
+            const orderDoc = await db.collection('orders').doc(id).get();
+            const order = orderDoc.data();
+            
+            document.getElementById('edit-order-id').value = id;
+            document.getElementById('edit-customerName').value = order.customerName;
+            document.getElementById('edit-customerMobile').value = order.customerMobile;
+            document.getElementById('edit-customerAddress').value = order.customerAddress;
+            document.getElementById('edit-description').value = order.description;
+            document.getElementById('edit-measurements').value = order.measurements || '';
+            const totalCharges = (order.items || []).reduce((sum, item) => sum + parseFloat(item.amount), 0);
+            document.getElementById('edit-totalCharges').value = totalCharges;
+            
+            const itemsContainer = document.getElementById('edit-items-container');
+            itemsContainer.innerHTML = '';
+            (order.items || []).forEach(item => {
+                const newItem = document.createElement('div');
+                newItem.className = 'item-row';
+                newItem.innerHTML = `
+                    <input type="text" class="item-name" placeholder="Item Name" value="${item.name}" required>
+                    <input type="number" class="item-amount" placeholder="Amount" step="0.01" value="${item.amount}" required>
+                    <input type="date" class="item-delivery-date" value="${item.deliveryDate}" required>
+                    <textarea class="needed-items-notes" placeholder="Needed Items" rows="2">${item.neededItems || ''}</textarea>
+                    <textarea class="design-notes" placeholder="Design Notes" rows="2">${item.designNotes || ''}</textarea>
+                    <select class="item-status w-full p-2 border rounded">
+                        <option value="Pending" ${item.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                        <option value="Completed" ${item.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                    </select>
+                    <select class="item-handover-status w-full p-2 border rounded mt-2">
+                        <option value="Pending" ${item.handoverStatus === 'Pending' ? 'selected' : ''}>Item with Tailor</option>
+                        <option value="Handed Over" ${item.handoverStatus === 'Handed Over' ? 'selected' : ''}>Item Handed Over</option>
+                    </select>
+                    <button type="button" class="remove-item-btn bg-red-500 text-white px-2 py-1 rounded-md mt-2"><i class="fas fa-minus"></i> Remove Item</button>
+                `;
+                itemsContainer.appendChild(newItem);
+                newItem.querySelector('.remove-item-btn').addEventListener('click', () => newItem.remove());
+            });
+
+            document.getElementById('edit-add-item-btn').onclick = () => {
+                const newItem = document.createElement('div');
+                newItem.className = 'item-row';
+                newItem.innerHTML = `<input type="text" class="item-name" placeholder="Item Name" required>
+                                     <input type="number" class="item-amount" placeholder="Amount" step="0.01" required>
+                                     <input type="date" class="item-delivery-date" required>
+                                     <textarea class="needed-items-notes" placeholder="Needed Items" rows="2"></textarea>
+                                     <textarea class="design-notes" placeholder="Design Notes" rows="2"></textarea>
+                                     <select class="item-status w-full p-2 border rounded">
+                                        <option value="Pending">Pending</option>
+                                        <option value="Completed">Completed</option>
+                                     </select>
+                                     <select class="item-handover-status w-full p-2 border rounded mt-2">
+                                        <option value="Pending">Item with Tailor</option>
+                                        <option value="Handed Over">Item Handed Over</option>
+                                     </select>
+                                     <button type="button" class="remove-item-btn bg-red-500 text-white px-2 py-1 rounded-md mt-2"><i class="fas fa-minus"></i> Remove Item</button>`;
+                itemsContainer.appendChild(newItem);
+                newItem.querySelector('.remove-item-btn').addEventListener('click', () => newItem.remove());
+            };
+
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+        
+        document.getElementById('edit-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const orderId = document.getElementById('edit-order-id').value;
+            const oldOrder = (await db.collection('orders').doc(orderId).get()).data();
+            
+            const updatedItems = [];
+            const completedItemsToday = [];
+            document.querySelectorAll('#edit-items-container .item-row').forEach(itemDiv => {
+                const name = itemDiv.querySelector('.item-name').value;
+                const amount = itemDiv.querySelector('.item-amount').value;
+                const deliveryDate = itemDiv.querySelector('.item-delivery-date').value;
+                const neededItems = itemDiv.querySelector('.needed-items-notes').value;
+                const designNotes = itemDiv.querySelector('.design-notes').value;
+                const status = itemDiv.querySelector('.item-status').value;
+                const handoverStatus = itemDiv.querySelector('.item-handover-status').value;
+
+                if (name && amount && deliveryDate) {
+                    const oldItem = oldOrder.items.find(item => item.name === name && item.deliveryDate === deliveryDate && item.amount == amount);
+                    const oldStatus = oldItem ? oldItem.status : 'Pending';
+                    const completionDate = (oldStatus !== 'Completed' && status === 'Completed') ? new Date().toISOString().slice(0, 10) : oldItem?.completionDate || '';
+                    if(oldStatus !== 'Completed' && status === 'Completed') {
+                        completedItemsToday.push({ name: name, mobile: form.elements['edit-customerMobile'].value });
+                    }
+                    updatedItems.push({ 
+                        name: name, 
+                        amount: parseFloat(amount), 
+                        deliveryDate: deliveryDate,
+                        neededItems: neededItems,
+                        designNotes: designNotes,
+                        status: status,
+                        handoverStatus: handoverStatus,
+                        completionDate: completionDate
+                    });
+                }
+            });
+
+            const updatedBooking = {
+                customerName: form.elements['edit-customerName'].value,
+                customerMobile: form.elements['edit-customerMobile'].value,
+                customerAddress: form.elements['edit-customerAddress'].value,
+                items: updatedItems,
+                description: form.elements['edit-description'].value,
+                measurements: form.elements['edit-measurements'].value
+            };
+            
+            try {
+                await db.collection('orders').doc(orderId).update(updatedBooking);
+                alert("Order updated successfully!");
+                closeModal('edit-modal');
+                renderOrdersTable();
+
+                if (automationSettings.customerFeedback) {
+                    completedItemsToday.forEach(item => {
+                        const feedbackMessage = `Hello ${form.elements['edit-customerName'].value}, your item "${item.name}" for order ID ${orderId.slice(0, 6)}... has been completed. Please share your feedback. Thank you!`;
+                        sendFeedback(item.mobile, feedbackMessage);
+                    });
+                }
+
+            } catch (error) {
+                alert("Error updating order: " + error.message);
+            }
+        });
+
+        async function deleteOrder(id) {
+            if (confirm("Are you sure you want to delete this order?")) {
+                try {
+                    await db.collection('orders').doc(id).delete();
+                    alert("Order deleted successfully!");
+                    renderOrdersTable();
+                } catch (error) {
+                    alert("Error deleting order: " + error.message);
+                }
+            }
+        }
+
+        function renderBookingForm() {
+            const form = document.getElementById('booking-form');
+            form.reset();
+            document.getElementById('items-container').innerHTML = `<div class="item-row">
+                                <input type="text" class="item-name" placeholder="Item Name" required>
+                                <input type="number" class="item-amount" placeholder="Amount" step="0.01" required>
+                                <input type="date" class="item-delivery-date" required>
+                                <textarea class="needed-items-notes" placeholder="e.g. green suit -> lace, dori, latkan"></textarea>
+                                <textarea class="design-notes" placeholder="e.g. Photo on WhatsApp. Same neck design."></textarea>
+                                <select class="item-status w-full p-2 border rounded">
+                                    <option value="Pending">Pending</option>
+                                    <option value="Completed">Completed</option>
+                                </select>
+                                <select class="item-handover-status w-full p-2 border rounded mt-2">
+                                    <option value="Pending">Item with Tailor</option>
+                                    <option value="Handed Over">Item Handed Over</option>
+                                </select>
+                                <button type="button" class="remove-item-btn bg-red-500 text-white px-2 py-1 rounded-md mt-2"><i class="fas fa-minus"></i> Remove Item</button>
+                            </div>`;
+            document.getElementById('booking-status').textContent = '';
+        }
+        
+        document.getElementById('receivedPayment').addEventListener('input', (e) => {
+            const container = document.getElementById('payment-method-container');
+            if (e.target.value > 0) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('booking-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const statusDiv = document.getElementById('booking-status');
+            statusDiv.textContent = 'Saving...';
+            
+            const items = [];
+            document.querySelectorAll('.item-row').forEach(itemDiv => {
+                const name = itemDiv.querySelector('.item-name').value;
+                const amount = itemDiv.querySelector('.item-amount').value;
+                const deliveryDate = itemDiv.querySelector('.item-delivery-date').value;
+                const neededItems = itemDiv.querySelector('.needed-items-notes').value;
+                const designNotes = itemDiv.querySelector('.design-notes').value;
+                const status = itemDiv.querySelector('.item-status').value;
+                const handoverStatus = itemDiv.querySelector('.item-handover-status').value;
+                if (name && amount && deliveryDate) {
+                    items.push({ 
+                        name: name, 
+                        amount: parseFloat(amount),
+                        deliveryDate: deliveryDate,
+                        neededItems: neededItems,
+                        designNotes: designNotes,
+                        status: status,
+                        handoverStatus: handoverStatus,
+                        completionDate: status === 'Completed' ? new Date().toISOString().slice(0, 10) : ''
+                    });
+                }
+            });
+            
+            const receivedPayment = parseFloat(form.elements['receivedPayment'].value) || 0;
+            const newBooking = {
+                customerName: form.elements['customerName'].value,
+                customerMobile: form.elements['customerMobile'].value,
+                customerAddress: form.elements['customerAddress'].value,
+                items: items,
+                bookingDate: new Date().toISOString().slice(0, 10),
+                description: form.elements['description'].value,
+                measurements: form.elements['measurements'].value
+            };
+            
+            try {
+                const docRef = await db.collection('orders').add(newBooking);
+                
+                if (receivedPayment > 0) {
+                    const paymentMethod = form.elements['payment-method-booking'].value;
+                    await db.collection('Payments').add({
+                        orderId: docRef.id,
+                        amount: receivedPayment,
+                        paymentMethod: paymentMethod,
+                        date: new Date().toISOString().slice(0, 10),
+                        paymentStatus: 'Completed'
+                    });
+                }
+                
+                statusDiv.textContent = 'Booking created successfully!';
+                statusDiv.className = 'text-green-600';
+                form.reset();
+                document.getElementById('payment-method-container').classList.add('hidden');
+                renderBookingForm();
+
+                if (automationSettings.customerFeedback) {
+                    const feedbackMessage = `Hello ${newBooking.customerName}, your booking with ID ${docRef.id.slice(0, 6)}... has been successfully created. Thank you!`;
+                    sendFeedback(newBooking.customerMobile, feedbackMessage);
+                }
+
+            } catch (error) {
+                statusDiv.textContent = 'Error creating booking: ' + error.message;
+                statusDiv.className = 'text-red-600';
+            }
+        });
+
+        async function sendFeedback(mobile, message) {
+            console.log(`Sending message to ${mobile}: ${message}`);
+        }
+
+        document.getElementById('add-item-btn').addEventListener('click', () => {
+            const itemsContainer = document.getElementById('items-container');
+            const newItem = document.createElement('div');
+            newItem.className = 'item-row';
+            newItem.innerHTML = `
+                <input type="text" class="item-name" placeholder="Item Name" required>
+                <input type="number" class="item-amount" placeholder="Amount" step="0.01" required>
+                <input type="date" class="item-delivery-date" required>
+                <textarea class="needed-items-notes" placeholder="e.g. green suit -> lace, dori, latkan"></textarea>
+                <textarea class="design-notes" placeholder="e.g. Photo on WhatsApp. Same neck design."></textarea>
+                <select class="item-status w-full p-2 border rounded">
+                    <option value="Pending">Pending</option>
+                    <option value="Completed">Completed</option>
+                </select>
+                <select class="item-handover-status w-full p-2 border rounded mt-2">
+                    <option value="Pending">Item with Tailor</option>
+                    <option value="Handed Over">Item Handed Over</option>
+                </select>
+                <button type="button" class="remove-item-btn bg-red-500 text-white px-2 py-1 rounded-md mt-2"><i class="fas fa-minus"></i> Remove Item</button>
+            `;
+            itemsContainer.appendChild(newItem);
+            newItem.querySelector('.remove-item-btn').addEventListener('click', () => {
+                newItem.remove();
+            });
+        });
+
+        async function renderPayments() {
+            const container = document.getElementById('payments-table-container');
+            container.innerHTML = `<p class="text-center text-gray-500">Loading payments...</p>`;
+            try {
+                allPayments = await fetchData('Payments');
+                if (allPayments.length === 0) {
+                    container.innerHTML = `<p class="text-center text-gray-500">No payments recorded.</p>`;
+                    return;
+                }
+                let totalAmountSum = 0;
+                let html = `<table class="min-w-full">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Order ID</th>
+                                        <th>Amount</th>
+                                        <th>Method</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+                allPayments.forEach(payment => {
+                    totalAmountSum += parseFloat(payment.data.amount) || 0;
+                    const statusColor = payment.data.paymentStatus === 'Completed' ? 'text-green-600' : 'text-red-600';
+                    const actions = `
+                                     <button onclick="editPayment('${payment.id}')" class="text-blue-500 hover:underline mx-1">Edit</button>
+                                     <button onclick="deletePayment('${payment.id}')" class="text-red-500 hover:underline mx-1"><i class="fas fa-trash-alt"></i></button>`;
+                    html += `<tr>
+                                <td>${payment.id.slice(0, 6)}...</td>
+                                <td>${payment.data.orderId.slice(0, 6)}...</td>
+                                <td>₹${(parseFloat(payment.data.amount) || 0).toFixed(2)}</td>
+                                <td>${payment.data.paymentMethod || 'N/A'}</td>
+                                <td>${payment.data.date}</td>
+                                <td><span class="${statusColor}">${payment.data.paymentStatus}</span></td>
+                                <td>${actions}</td>
+                            </tr>`;
+                });
+                html += `</tbody><tfoot>
+                            <tr class="font-bold bg-gray-200">
+                                <td colspan="2">Grand Total</td>
+                                <td>₹${totalAmountSum.toFixed(2)}</td>
+                                <td colspan="4"></td>
+                            </tr>
+                        </tfoot></table>`;
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = `<p class="text-red-600 text-center">Error loading payments.</p>`;
+                console.error("Error fetching payments: ", error);
+            }
+        }
+        
+        async function editPayment(id) {
+            try {
+                const paymentDoc = await db.collection('Payments').doc(id).get();
+                if (!paymentDoc.exists) {
+                    alert("Payment not found.");
+                    return;
+                }
+                const paymentData = paymentDoc.data();
+                document.getElementById('edit-payment-id').value = id;
+                document.getElementById('edit-payment-amount').value = paymentData.amount;
+                document.getElementById('edit-payment-method').value = paymentData.paymentMethod;
+                document.getElementById('edit-payment-modal').style.display = 'flex';
+            } catch (error) {
+                alert("Error fetching payment details: " + error.message);
+                console.error("Error fetching payment details:", error);
+            }
+        }
+
+        async function updatePayment(e) {
+            e.preventDefault();
+            const form = e.target;
+            const paymentId = document.getElementById('edit-payment-id').value;
+            const newAmount = parseFloat(form.elements['edit-payment-amount'].value);
+            const newMethod = form.elements['edit-payment-method'].value;
+            
+            if (isNaN(newAmount)) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+            
+            try {
+                await db.collection('Payments').doc(paymentId).update({
+                    amount: newAmount,
+                    paymentMethod: newMethod
+                });
+                alert("Payment updated successfully!");
+                closeModal('edit-payment-modal');
+                renderPayments();
+            } catch (error) {
+                alert("Error updating payment: " + error.message);
+                console.error("Error updating payment:", error);
+            }
+        }
+
+        document.getElementById('edit-payment-form').addEventListener('submit', updatePayment);
+
+        async function deletePayment(id) {
+            if (confirm("Are you sure you want to delete this payment record?")) {
+                try {
+                    await db.collection('Payments').doc(id).delete();
+                    alert("Payment deleted successfully!");
+                    renderPayments();
+                } catch (error) {
+                    alert("Error deleting payment: " + error.message);
+                }
+            }
+        }
+
+        async function recordPaymentForOrder(orderId) {
+            const orderDoc = await db.collection('orders').doc(orderId).get();
+            const order = orderDoc.data();
+            const totalChargesForOrder = (order.items || []).reduce((sum, item) => sum + parseFloat(item.amount), 0);
+            const orderPayments = allPayments.filter(p => p.data.orderId === orderId);
+            const totalPaid = orderPayments.reduce((sum, p) => sum + parseFloat(p.data.amount), 0);
+            const dueAmount = totalChargesForOrder - totalPaid;
+
+            document.getElementById('record-order-id').value = orderId;
+            document.getElementById('record-order-display-id').textContent = orderId.slice(0, 6) + '...';
+            document.getElementById('record-due-amount').textContent = `₹${dueAmount.toFixed(2)}`;
+            document.getElementById('record-payment-modal').style.display = 'flex';
+        }
+
+        document.getElementById('record-payment-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const orderId = document.getElementById('record-order-id').value;
+            const amount = parseFloat(form.elements['record-payment-amount'].value);
+            const method = form.elements['record-payment-method'].value;
+            const status = form.elements['record-payment-status'].value;
+
+            const newPayment = {
+                orderId: orderId,
+                amount: amount,
+                paymentMethod: method,
+                paymentStatus: status,
+                date: new Date().toISOString().slice(0, 10)
+            };
+
+            try {
+                const orderDoc = await db.collection('orders').doc(newPayment.orderId).get();
+                if (!orderDoc.exists) {
+                    throw new Error("Order ID not found.");
+                }
+
+                await db.collection('Payments').add(newPayment);
+                alert("Payment recorded successfully!");
+                closeModal('record-payment-modal');
+                renderOrdersTable();
+                renderPayments();
+            } catch (error) {
+                alert("Error recording payment: " + error.message);
+            }
+        });
+
+        document.getElementById('payment-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const statusDiv = document.getElementById('payment-status');
+            statusDiv.textContent = 'Recording...';
+            
+            const newPayment = {
+                orderId: form.elements['payment-order-id'].value,
+                amount: parseFloat(form.elements['payment-amount'].value),
+                paymentMethod: form.elements['payment-method'].value,
+                paymentStatus: form.elements['payment-status-new'].value,
+                date: new Date().toISOString().slice(0, 10)
+            };
+
+            try {
+                const orderDoc = await db.collection('orders').doc(newPayment.orderId).get();
+                if (!orderDoc.exists) {
+                    throw new Error("Order ID not found.");
+                }
+
+                await db.collection('Payments').add(newPayment);
+                statusDiv.textContent = 'Payment recorded successfully!';
+                statusDiv.className = 'text-green-600';
+                form.reset();
+                renderPayments();
+            } catch (error) {
+                statusDiv.textContent = 'Error recording payment: ' + error.message;
+                statusDiv.className = 'text-red-600';
+            }
+        });
+
+        async function renderExpenses() {
+            const container = document.getElementById('expenses-table-container');
+            container.innerHTML = `<p class="text-center text-gray-500">Loading expenses...</p>`;
+            try {
+                allExpenses = await fetchData('Expenses');
+                if (allExpenses.length === 0) {
+                    container.innerHTML = `<p class="text-center text-gray-500">No expenses recorded.</p>`;
+                    return;
+                }
+                let totalAmountSum = 0;
+                let html = `<table class="min-w-full">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+                allExpenses.forEach(expense => {
+                    totalAmountSum += parseFloat(expense.data.amount) || 0;
+                    html += `<tr>
+                                <td>${expense.data.name}</td>
+                                <td>₹${(parseFloat(expense.data.amount) || 0).toFixed(2)}</td>
+                                <td>${expense.data.date}</td>
+                                <td>
+                                    <button onclick="deleteExpense('${expense.id}')" class="text-red-500 hover:underline mx-1"><i class="fas fa-trash-alt"></i></button>
+                                </td>
+                            </tr>`;
+                });
+                html += `</tbody><tfoot>
+                            <tr class="font-bold bg-gray-200">
+                                <td colspan="1">Grand Total</td>
+                                <td>₹${totalAmountSum.toFixed(2)}</td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot></table>`;
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = `<p class="text-red-600 text-center">Error loading expenses.</p>`;
+                console.error("Error fetching expenses: ", error);
+            }
+        }
+
+        document.getElementById('expense-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const statusDiv = document.getElementById('expense-status');
+            statusDiv.textContent = 'Recording...';
+            
+            const newExpense = {
+                name: form.elements['expense-name'].value,
+                amount: parseFloat(form.elements['expense-amount'].value),
+                date: form.elements['expense-date'].value
+            };
+
+            try {
+                await db.collection('Expenses').add(newExpense);
+                statusDiv.textContent = 'Expense recorded successfully!';
+                statusDiv.className = 'text-green-600';
+                form.reset();
+                renderExpenses();
+            } catch (error) {
+                statusDiv.textContent = 'Error recording expense: ' + error.message;
+                statusDiv.className = 'text-red-600';
+            }
+        });
+
+        async function deleteExpense(id) {
+            if (confirm("Are you sure you want to delete this expense record?")) {
+                try {
+                    await db.collection('Expenses').doc(id).delete();
+                    alert("Expense deleted successfully!");
+                    renderExpenses();
+                } catch (error) {
+                    alert("Error deleting expense: " + error.message);
+                }
+            }
+        }
+
+        async function renderPurchaseList() {
+            const container = document.getElementById('purchase-list-container');
+            container.innerHTML = `<p class="text-center text-gray-500">Loading purchase list...</p>`;
+            try {
+                const orders = await fetchData('orders');
+                let itemsToPurchase = [];
+                orders.forEach(order => {
+                    if (order.data.items) {
+                        order.data.items.forEach((item, index) => {
+                            if (item.neededItems) {
+                                itemsToPurchase.push({
+                                    orderId: order.id,
+                                    itemName: item.name,
+                                    notes: item.neededItems,
+                                    customerName: order.data.customerName,
+                                    status: item.purchaseStatus || 'Pending',
+                                    cost: item.purchaseCost || 0,
+                                    itemIndex: index
+                                });
+                            }
+                        });
+                    }
+                });
+                
+                if (itemsToPurchase.length === 0) {
+                    container.innerHTML = `<p class="text-center text-gray-500">No pending items to purchase.</p>`;
+                    return;
+                }
+
+                let html = `<table class="min-w-full">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Customer</th>
+                                        <th>Item Name</th>
+                                        <th>Notes</th>
+                                        <th>Cost</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+                itemsToPurchase.forEach(item => {
+                    html += `<tr>
+                                <td>${item.orderId.slice(0,6)}...</td>
+                                <td>${item.customerName}</td>
+                                <td>${item.itemName}</td>
+                                <td>${item.notes}</td>
+                                <td>₹${(parseFloat(item.cost) || 0).toFixed(2)}</td>
+                                <td>${item.status}</td>
+                                <td><button onclick="openPurchaseModal('${item.orderId}', ${item.itemIndex})" class="text-blue-500">Manage</button></td>
+                             </tr>`;
+                });
+                html += `</tbody></table>`;
+                container.innerHTML = html;
+            } catch(error) {
+                container.innerHTML = `<p class="text-red-600 text-center">Error loading purchase list.</p>`;
+                console.error("Error fetching purchase list:", error);
+            }
+        }
+
+        async function openPurchaseModal(orderId, itemIndex) {
+            const doc = await db.collection('orders').doc(orderId).get();
+            const order = doc.data();
+            const item = order.items[itemIndex];
+            
+            document.getElementById('purchase-order-id').value = orderId;
+            document.getElementById('purchase-item-id').value = itemIndex;
+            document.getElementById('purchase-item-name').value = item.name;
+            document.getElementById('purchase-notes').value = item.neededItems;
+            document.getElementById('purchase-cost').value = item.purchaseCost || '';
+            document.getElementById('purchase-status').value = item.purchaseStatus || 'Pending';
+            
+            document.getElementById('purchase-modal').style.display = 'flex';
+        }
+
+        async function savePurchaseDetails() {
+            const orderId = document.getElementById('purchase-order-id').value;
+            const itemIndex = parseInt(document.getElementById('purchase-item-id').value);
+            const purchaseCost = parseFloat(document.getElementById('purchase-cost').value) || 0;
+            const purchaseStatus = document.getElementById('purchase-status').value;
+            
+            try {
+                const docRef = db.collection('orders').doc(orderId);
+                const doc = await docRef.get();
+                const items = doc.data().items;
+                items[itemIndex].purchaseCost = purchaseCost;
+                items[itemIndex].purchaseStatus = purchaseStatus;
+                
+                await docRef.update({ items: items });
+                alert('Purchase details saved successfully!');
+                closeModal('purchase-modal');
+                renderPurchaseList();
+            } catch(error) {
+                alert('Error saving purchase details: ' + error.message);
+                console.error(error);
+            }
+        }
+        
+        async function renderReports() {
+            const totalIncome = (allPayments || []).filter(p => p.data.paymentStatus === 'Completed').reduce((sum, payment) => sum + (parseFloat(payment.data.amount) || 0), 0);
+            const totalExpenses = (allExpenses || []).reduce((sum, expense) => sum + (parseFloat(expense.data.amount) || 0), 0);
+            const netProfit = totalIncome - totalExpenses;
+            
+            document.getElementById('total-income-report').textContent = `₹${totalIncome.toFixed(2)}`;
+            document.getElementById('total-expenses-report').textContent = `₹${totalExpenses.toFixed(2)}`;
+            document.getElementById('net-profit-report').textContent = `₹${netProfit.toFixed(2)}`;
+        }
+
+        async function renderCustomerProfiles() {
+            const container = document.getElementById('customer-profiles-container');
+            container.innerHTML = `<p class="text-center text-gray-500">Loading customers...</p>`;
+            try {
+                const orders = await fetchData('orders');
+                const uniqueCustomers = [];
+                const customerMap = new Map();
+                for (const order of orders) {
+                    const mobile = order.data.customerMobile;
+                    if (!customerMap.has(mobile)) {
+                        customerMap.set(mobile, {
+                            name: order.data.customerName,
+                            mobile: mobile,
+                            address: order.data.customerAddress,
+                            orders: [],
+                            measurements: ''
+                        });
+                        uniqueCustomers.push(customerMap.get(mobile));
+                    }
+                    customerMap.get(mobile).orders.push(order);
+                }
+                
+                const measurementDocs = await db.collection('CustomerMeasurements').get();
+                measurementDocs.forEach(doc => {
+                    const mobile = doc.id;
+                    if (customerMap.has(mobile)) {
+                        customerMap.get(mobile).measurements = doc.data().measurements;
+                    }
+                });
+
+                allCustomers = uniqueCustomers;
+                displayCustomers(allCustomers);
+            } catch (error) {
+                container.innerHTML = `<p class="text-red-600 text-center">Error loading customers.</p>`;
+                console.error("Error fetching customers: ", error);
+            }
+        }
+        
+        function displayCustomers(customers) {
+            const container = document.getElementById('customer-profiles-container');
+            if (customers.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-500">No customers found.</p>`;
+                return;
+            }
+            let html = `<table class="min-w-full">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Mobile</th>
+                                    <th>Orders</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+            customers.forEach(customer => {
+                const orderCount = customer.orders.length;
+                html += `<tr>
+                            <td>${customer.name}</td>
+                            <td>${customer.mobile}</td>
+                            <td>${orderCount}</td>
+                            <td>
+                                <button onclick="viewCustomerLedger('${customer.mobile}')" class="text-blue-500 hover:underline mx-1">Ledger</button>
+                                <button onclick="openMeasurementsModal('${customer.mobile}', '${customer.name}')" class="text-green-500 hover:underline mx-1">Measurements</button>
+                            </td>
+                         </tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        async function openMeasurementsModal(mobile, name) {
+            const doc = await db.collection('CustomerMeasurements').doc(mobile).get();
+            const measurements = doc.exists ? doc.data().measurements : '';
+            
+            document.getElementById('measurements-customer-name').textContent = name;
+            document.getElementById('measurements-customer-mobile').textContent = mobile;
+            document.getElementById('measurements-content').value = measurements;
+            
+            document.getElementById('measurements-modal').style.display = 'flex';
+        }
+
+        async function saveCustomerMeasurements() {
+            const mobile = document.getElementById('measurements-customer-mobile').textContent;
+            const measurements = document.getElementById('measurements-content').value;
+            
+            try {
+                await db.collection('CustomerMeasurements').doc(mobile).set({ measurements: measurements }, { merge: true });
+                alert("Measurements saved successfully!");
+                closeModal('measurements-modal');
+            } catch (error) {
+                alert("Error saving measurements: " + error.message);
+            }
+        }
+        
+        async function loadMeasurementsFromProfile() {
+            const mobile = document.getElementById('customerMobile').value;
+            if (!mobile) {
+                alert("Please enter a customer mobile number first.");
+                return;
+            }
+            
+            try {
+                const doc = await db.collection('CustomerMeasurements').doc(mobile).get();
+                if (doc.exists && doc.data().measurements) {
+                    document.getElementById('measurements').value = doc.data().measurements;
+                    alert("Measurements loaded successfully!");
+                } else {
+                    alert("No permanent measurements found for this mobile number.");
+                }
+            } catch (error) {
+                alert("Error loading measurements: " + error.message);
+            }
+        }
+
+        function filterCustomers() {
+            const searchTerm = document.getElementById('customer-search').value.toLowerCase();
+            const filteredCustomers = allCustomers.filter(customer =>
+                customer.name.toLowerCase().includes(searchTerm) ||
+                customer.mobile.toLowerCase().includes(searchTerm)
+            );
+            displayCustomers(filteredCustomers);
+        }
+
+        async function viewCustomerLedger(mobile) {
+            const customerOrders = allOrders.filter(o => o.data.customerMobile === mobile);
+            const customerPayments = allPayments.filter(p => customerOrders.some(o => o.id === p.data.orderId));
+            const customerName = customerOrders.length > 0 ? customerOrders[0].data.customerName : 'N/A';
+            
+            document.getElementById('ledger-customer-name').textContent = customerName;
+            document.getElementById('ledger-customer-mobile').textContent = mobile;
+
+            let html = ``;
+            let totalBalanceDue = 0;
+            
+            customerOrders.forEach(order => {
+                const paymentsForOrder = allPayments.filter(p => p.data.orderId === order.id);
+                const items = order.data.items || [];
+                const totalChargesForOrder = items.reduce((sum, item) => sum + parseFloat(item.amount), 0);
+                const totalPaidForOrder = paymentsForOrder.reduce((sum, p) => sum + parseFloat(p.data.amount), 0);
+                const balance = totalChargesForOrder - totalPaidForOrder;
+                totalBalanceDue += balance;
+
+                html += `<div class="border p-4 mb-4 rounded-lg bg-gray-50">
+                            <p class="font-bold">Order ID: ${order.id.slice(0, 6)}... (on ${order.data.bookingDate})</p>
+                            <p><strong>Total Charges:</strong> ₹${totalChargesForOrder.toFixed(2)}</p>
+                            <p><strong>Total Paid:</strong> ₹${totalPaidForOrder.toFixed(2)}</p>
+                            <p><strong>Balance Due:</strong> <span class="text-red-600">₹${balance.toFixed(2)}</span></p>
+                            <div class="mt-2 text-sm text-gray-700">
+                                <p class="font-bold">Items Details:</p>
+                                <ul class="list-disc list-inside">
+                                    ${items.map(item => `<li>${item.name} - Status: ${item.status} | Handover: ${item.handoverStatus} | Delivery: ${item.deliveryDate}</li>`).join('')}
+                                </ul>
+                                <p class="font-bold mt-2">Payments History:</p>
+                                ${paymentsForOrder.map(p => {
+                                    const paymentStatusColor = p.data.paymentStatus === 'Completed' ? 'text-green-600' : 'text-red-600';
+                                    return `<span>- ₹${(parseFloat(p.data.amount) || 0).toFixed(2)} on ${p.data.date} via ${p.data.paymentMethod || 'N/A'} (<span class="${paymentStatusColor}">${p.data.paymentStatus}</span>)</span>`;
+                                }).join('<br>') || 'No payments recorded.'}
+                            </div>
+                        </div>`;
+            });
+
+            html += `<h3 class="font-bold text-lg mt-4">Total Balance Due: <span class="text-red-600">₹${totalBalanceDue.toFixed(2)}</span></h3>`;
+
+            document.getElementById('ledger-content-container').innerHTML = html;
+            document.getElementById('ledger-modal').style.display = 'flex';
+        }
+
+        async function renderMessages() {
+            const container = document.getElementById('messages-container');
+            container.innerHTML = '<p class="text-center text-gray-500">Loading messages...</p>';
+            try {
+                const messages = await fetchData('Messages');
+                if (messages.length === 0) {
+                    container.innerHTML = '<p class="text-center text-gray-500">No new messages.</p>';
+                    return;
+                }
+                let html = `<ul class="space-y-4">`;
+                messages.forEach(msg => {
+                    html += `<li class="p-4 border rounded-lg bg-gray-50">
+                                <p class="font-bold">From: ${msg.data.name} (${msg.data.mobile})</p>
+                                <p class="text-sm text-gray-500">${new Date(msg.data.timestamp).toLocaleString()}</p>
+                                <p class="mt-2">${msg.data.content}</p>
+                                <button onclick="markMessageAsRead('${msg.id}')" class="text-blue-500 text-sm mt-2">Mark as Read</button>
+                             </li>`;
+                });
+                html += `</ul>`;
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<p class="text-red-600 text-center">Error loading messages.</p>';
+                console.error('Messages Error:', e);
+            }
+        }
+
+        async function markMessageAsRead(id) {
+            if (confirm("Are you sure you want to mark this message as read?")) {
+                await db.collection('Messages').doc(id).delete();
+                renderMessages();
+            }
+        }
+
+        async function renderAppointments() {
+            const container = document.getElementById('appointments-container');
+            container.innerHTML = '<p class="text-center text-gray-500">Loading appointments...</p>';
+            try {
+                const appointments = await fetchData('Appointments');
+                if (appointments.length === 0) {
+                    container.innerHTML = '<p class="text-center text-gray-500">No new appointments.</p>';
+                    return;
+                }
+                let html = `<ul class="space-y-4">`;
+                appointments.forEach(appt => {
+                    html += `<li class="p-4 border rounded-lg bg-gray-50">
+                                <p class="font-bold">Appointment from: ${appt.data.name} (${appt.data.mobile})</p>
+                                <p><strong>Date:</strong> ${appt.data.date} at ${appt.data.time}</p>
+                                <p class="text-sm text-gray-500">Notes: ${appt.data.notes}</p>
+                                <button onclick="markAppointmentAsCompleted('${appt.id}')" class="text-blue-500 text-sm mt-2">Mark as Complete</button>
+                             </li>`;
+                });
+                html += `</ul>`;
+                container.innerHTML = html;
+            } catch (e) {
+                container.innerHTML = '<p class="text-red-600 text-center">Error loading appointments.</p>';
+                console.error('Appointments Error:', e);
+            }
+        }
+
+        async function markAppointmentAsCompleted(id) {
+            if (confirm("Are you sure you want to mark this appointment as completed?")) {
+                await db.collection('Appointments').doc(id).delete();
+                renderAppointments();
+            }
+        }
+
+        window.onload = () => {
+            renderDashboard();
+        };
+    </script>
+
+<script src="./script.js"></script></body></html>
